@@ -1,0 +1,31 @@
+<% include ../partials/header %>
+
+<div class="container">
+	<header class="jumbotron">
+		<div class="container">
+			<h1>Welcome to Bug Report</h1>
+			<p>Submit a new project and report all it's bugs</p>
+			<p>
+				<a href="/camps/new" class="btn btn-primary btn-lg">Add new Project</a>
+			</p>
+		</div>
+
+	</header>
+
+	<div class="row text-center camps-grid ">
+		<% projects.forEach(function(item) { %>
+			<div class="col-md-3 col-sm-6">
+				<div class="thumbnail">
+					<img src="/img/<%= item.image %>" alt="<%= item.title %>" >
+					<div class="caption">
+						<h4><%= item.title %></h4>
+					</div>
+					<p><a href="/camps/<%= item.id %>" class="btn btn-primary">Show</a></p>
+				</div>
+			</div>
+		<% }) %>
+	</div>
+
+</div>
+
+<% include ../partials/footer %>

@@ -9,7 +9,12 @@ var passportLocalMongoose = require('passport-local-mongoose');
 var methodOverride = require('method-override');
 var flash = require('connect-flash');
 
-// var seedDB = require('./seed');
+var Project = require('./models/projects');
+
+
+var seedDB = require('./seed');
+
+seedDB();
 
 
 //-------------- CONNECT TO MONGODB -----------------
@@ -34,6 +39,39 @@ app.use(methodOverride("_method"))
 app.get('/', function (req, res) {
   res.render('landing.ejs');
 })
+
+app.get('/projects', function (req, res) {
+	Project.find({}, function(err, projects) {
+        if (err) {
+            console.log("cannot retrieve projects");
+            console.log(err);
+        } else {
+            res.render('projects/show', {
+                projects: projects
+            });
+        }
+    })
+})
+
+app.get('/projects/new', function (req, res) {
+  res.send('projects new');
+})
+
+app.get('/projects/:id/issue', function (req, res) {
+	console.log(req.params.id)
+  res.send('projects issue');
+})
+
+app.get('/projects/:id/issue/new', function (req, res) {
+	console.log(req.params.id)
+  res.send('projects issue new');
+})
+
+app.get('/projects/:id/issue/:issueID', function (req, res) {
+	console.log(req.params.id, req.params.issueID)
+  res.send('projects issue id');
+})
+
 
 //-----------SERVER--------------
 
