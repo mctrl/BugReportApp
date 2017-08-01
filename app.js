@@ -26,7 +26,7 @@ app.use(express.static(__dirname + '/public'));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(expressSession({
-    secret:"This is my secret",
+    secret: "This is my secret",
     resave: false,
     saveUninitialized: false
 }))
@@ -35,13 +35,13 @@ app.use(flash());
 app.use(methodOverride("_method"))
 
 //-----------ROUTES--------------
- 
-app.get('/', function (req, res) {
-  res.render('landing.ejs');
+
+app.get('/', function(req, res) {
+    res.render('landing.ejs');
 })
 
-app.get('/projects', function (req, res) {
-	Project.find({}, function(err, projects) {
+app.get('/projects', function(req, res) {
+    Project.find({}, function(err, projects) {
         if (err) {
             console.log("cannot retrieve projects");
             console.log(err);
@@ -53,28 +53,43 @@ app.get('/projects', function (req, res) {
     })
 })
 
-app.get('/projects/new', function (req, res) {
-  res.send('projects new');
+app.post('/projects', function(req, res) {
+    // res.send('projects new');
+    Project.create(req.body.project, function(err, camp) {
+        if (err) {
+            console.log("Something went wrong")
+        } else {
+
+            console.log("we just added a project")
+            // console.log(camp);
+            res.redirect('/projects');
+        }
+    })
 })
 
-app.get('/projects/:id/issue', function (req, res) {
-	console.log(req.params.id)
-  res.send('projects issue');
+app.get('/projects/new', function(req, res) {
+    // res.send('projects new');
+    res.render('projects/new');
 })
 
-app.get('/projects/:id/issue/new', function (req, res) {
-	console.log(req.params.id)
-  res.send('projects issue new');
+app.get('/projects/:id/issue', function(req, res) {
+    console.log(req.params.id)
+    res.send('projects issue');
 })
 
-app.get('/projects/:id/issue/:issueID', function (req, res) {
-	console.log(req.params.id, req.params.issueID)
-  res.send('projects issue id');
+app.get('/projects/:id/issue/new', function(req, res) {
+    console.log(req.params.id)
+    res.send('projects issue new');
+})
+
+app.get('/projects/:id/issue/:issueID', function(req, res) {
+    console.log(req.params.id, req.params.issueID)
+    res.send('projects issue id');
 })
 
 
 //-----------SERVER--------------
 
 app.listen(process.env.PORT, function() {
-	console.log("BugReport has started on port", process.env.PORT)
+    console.log("BugReport has started on port", process.env.PORT)
 })

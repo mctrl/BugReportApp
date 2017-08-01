@@ -1,0 +1,32 @@
+<% include ../partials/header %>
+<div class="container">
+	<div class="row">
+		<div class="newcamp-wrapper">
+			<h1 class="text-center">Create a new Project</h1>
+			<div class="row">
+				<div class="col-md-4"></div>
+				<div class="col-md-4">
+					<form action="/projects" method="post" class="form">
+						<div class="form-group">
+							<label>Title of the project</label>
+							<input type="text" class="form-control" name="project[title]" placeholder="Camp Name">
+						</div>	
+						<div class="form-group">
+							<label>Image of the project</label>
+							<input type="text" class="form-control" name="project[image]" placeholder="Image">	
+						</div>		
+						<div class="form-group">
+							<button type="submit" class="btn btn-lg btn-default btn-block">Add</button>
+						</div>	
+					</form>
+					<a href="/projects">Back</a>
+				</div>
+				<div class="col-md-4"></div>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+
+<% include ../partials/footer %>
