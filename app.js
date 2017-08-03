@@ -95,7 +95,7 @@ app.get('/projects/:id/issues', function(req, res) {
 
 app.post('/projects/:id/issues', function(req, res) {
     console.log(req.params.id)
-    var bug = req.body;
+    var bug = req.body.issue;
     bug.completed = false;
     Project.findById(req.params.id, function(err, project) {
         if (err) {
@@ -104,6 +104,7 @@ app.post('/projects/:id/issues', function(req, res) {
             Issue.create(bug, function(err, feature) {
                 if (err) {console.log(err)
                 } else {
+
                     project.issues.push(feature);
                     project.save();
                     res.redirect("/projects/"+req.params.id+"/issues")
@@ -114,6 +115,7 @@ app.post('/projects/:id/issues', function(req, res) {
     })
 
 })
+
 
 app.get('/projects/:id/issues/new', function(req, res) {
     console.log(req.params.id)
@@ -131,6 +133,25 @@ app.get('/projects/:id/issues/:issueID', function(req, res) {
     res.send('projects issue id');
 })
 
+app.put('/projects/:id/issues/:issueID', function(req, res) {
+    console.log("update issue")
+    Issue.findByIdAndUpdate(req.params.issueID, {completed: true} , function(err, foundIssue) {
+        if (err) {res.redirect('back')} else {
+            // console.log(foundIssue);
+            res.redirect('/projects/' + req.params.id + '/issues');
+        }
+    })
+});
+
+app.delete('/projects/:id/issues/:issueID', function(req, res) {
+    console.log("delete issue")
+    Issue.findByIdAndRemove(req.params.issueID , function(err, foundIssue) {
+        if (err) {res.redirect('back')} else {
+            // console.log(foundIssue);
+            res.redirect('/projects/' + req.params.id + '/issues');
+        }
+    })
+});
 
 //-----------SERVER--------------
 
