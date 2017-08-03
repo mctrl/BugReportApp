@@ -1,0 +1,60 @@
+<% include ../partials/header %>
+    <div class="container">
+        <div class="row">
+            <div class="newcamp-wrapper">
+                <h1 class="text-center">Add new comment to <%= project.name %></h1>
+                <div class="row">
+                    <div class="col-md-4"></div>
+                    <div class="col-md-4">
+                        <form action="/projects/<%= project._id %>/issues" method="post" class="form">
+                            <div class="form-group">
+                                <label>Add a summary</label>
+                                <input type="text" name="issue[summary]" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label>What device where you using?</label>
+                                <select name="issue[device]">
+                                    <option value="pc">PC</option>
+                                    <option value="laptop">laptop</option>
+                                    <option value="tablet">tablet</option>
+                                    <option value="mobile">mobile</option>
+                                    <!-- <option value=""></option> -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>What operating system?</label>
+                                <select name="issue[os]">
+                                    <option value="windows">windows</option>
+                                    <option value="apple">apple</option>
+                                    <option value="android">android</option>
+                                    <!-- <option value=""></option> -->
+                                    <!-- <option value=""></option> -->
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>What browser?</label>
+                                <select name="issue[]">
+                                    <option value="chrome">chrome</option>
+                                    <option value="safari">safari</option>
+                                    <option value="ie">internet explorer</option>
+                                    <option value="edge">edge</option>
+                                    <option value="firefox">firefox</option>
+                                    <option value="none">none</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Add the steps to reproduce it</label>
+                                <textarea class="form-control" name="issue[steps]" cols="30" rows="10"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-lg btn-default btn-block">Add</button>
+                            </div>
+                        </form>
+                        <a href="/projects/<%= project._id %>/issues">Back</a>
+                    </div>
+                    <div class="col-md-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <% include ../partials/footer %>

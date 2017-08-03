@@ -10,6 +10,7 @@ var methodOverride = require('method-override');
 var flash = require('connect-flash');
 
 var Project = require('./models/projects');
+var Issue = require('./models/issues');
 
 
 var seedDB = require('./seed');
@@ -37,9 +38,16 @@ app.use(methodOverride("_method"))
 //-----------ROUTES--------------
 
 app.get('/', function(req, res) {
-    res.render('landing.ejs');
+    res.render('landing');
 })
 
+app.get('/login', function(req, res) {
+    res.render('user/login');
+})
+
+app.post('/login', function(req, res) {
+    res.send('login post');
+})
 app.get('/projects', function(req, res) {
     Project.find({}, function(err, projects) {
         if (err) {
@@ -72,17 +80,53 @@ app.get('/projects/new', function(req, res) {
     res.render('projects/new');
 })
 
-app.get('/projects/:id/issue', function(req, res) {
+app.get('/projects/:id/issues', function(req, res) {
     console.log(req.params.id)
-    res.send('projects issue');
+    Project.findById(req.params.id).populate("issues").exec(function(err, foundProject) {
+        if (err) {
+            console.log("didnt't find project")
+        } else {
+            res.render('issues/show', { foundProject: foundProject });
+        }
+
+
+    })
 })
 
-app.get('/projects/:id/issue/new', function(req, res) {
+app.post('/projects/:id/issues', function(req, res) {
     console.log(req.params.id)
-    res.send('projects issue new');
+    var bug = req.body;
+    bug.completed = false;
+    Project.findById(req.params.id, function(err, project) {
+        if (err) {
+            console.log(err)
+        } else {
+            Issue.create(bug, function(err, feature) {
+                if (err) {console.log(err)
+                } else {
+                    project.issues.push(feature);
+                    project.save();
+                    res.redirect("/projects/"+req.params.id+"/issues")
+                }
+            })
+        }
+        // body...
+    })
+
 })
 
-app.get('/projects/:id/issue/:issueID', function(req, res) {
+app.get('/projects/:id/issues/new', function(req, res) {
+    console.log(req.params.id)
+    Project.findById(req.params.id, function(err, project) {
+        if (err) {
+            console.log(err)
+        } else {
+            res.render("issues/new", { project: project })
+        }
+    })
+})
+
+app.get('/projects/:id/issues/:issueID', function(req, res) {
     console.log(req.params.id, req.params.issueID)
     res.send('projects issue id');
 })
