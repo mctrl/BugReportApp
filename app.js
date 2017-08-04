@@ -79,9 +79,6 @@ app.get('/logout', function(req, res) {
     res.redirect('/')
 })
 
-app.post('/login', function(req, res) {
-    res.send('login post');
-})
 app.get('/projects',isLoggedIn, function(req, res) {
     Project.find({}, function(err, projects) {
         if (err) {
