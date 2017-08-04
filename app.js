@@ -12,7 +12,7 @@ var moment = require('moment');
 
 var Project = require('./models/projects');
 var Issue = require('./models/issues');
-
+var User = require('./models/users');
 
 var seedDB = require('./seed');
 
@@ -38,6 +38,23 @@ app.use(methodOverride("_method"))
 
 app.locals.moment = moment;
 
+//-------------PASSPORT SETUP---------------
+app.use(passport.initialize());
+app.use(passport.session());
+
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+
+app.use(function(req, res, next) {
+    res.locals.currentUser = req.user;
+    // res.locals.error = req.flash('error');
+    // res.locals.success = req.flash('success');
+    next();
+})
+
+
 //-----------ROUTES--------------
 
 app.get('/', function(req, res) {
@@ -46,6 +63,20 @@ app.get('/', function(req, res) {
 
 app.get('/login', function(req, res) {
     res.render('user/login');
+})
+
+app.post('/login', passport.authenticate('local', {
+        failureRedirect: '/login',
+        // failureFlash: 'Unsuccessful login'
+    }), function(req, res) {
+    // req.flash('success', 'Welcome back ' + req.user.username);
+    res.redirect('/projects')
+})
+
+app.get('/logout', function(req, res) {
+    req.logout();
+    // req.flash('success', "You logged out")
+    res.redirect('/')
 })
 
 app.post('/login', function(req, res) {
