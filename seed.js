@@ -22,11 +22,15 @@ var bug = {
     completed: false
 }
 
-var dummy = {
+var dummyUsers = [{
     username: "martina",
     password: "password",
     group: "admin"
-}
+}, {
+    username: "someone",
+    password: "password",
+    group: "client1"
+}]
 
 function seedDB() {
     //remove all campgrounds
@@ -40,26 +44,30 @@ function seedDB() {
                     } else {
                         //add campground
 
-                        User.register(new User({ username: dummy.username, group: dummy.group }), dummy.password, function(err, user) {
-                            if (err) return;
-                            console.log("created a user")
-                            data.forEach(function(seed) {
-                                Project.create(seed, function(err, project) {
-                                    if (err) {
-                                        console.log("create project error")
-                                    } else {
-                                        console.log("project created");
-                                        Issue.create(bug, function(err, feature) {
-                                            if (err) { console.log("error on issue") } else {
-                                                project.issues.push(feature);
-                                                project.save();
-                                                console.log("bug reported");
-                                            };
-                                        })
-                                    }
-                                })
-                            })
+                        dummyUsers.forEach(function(dummy) {
+                            User.register(new User({ username: dummy.username, group: dummy.group }), dummy.password, function(err, user) {
+                                if (err) return;
+                                console.log("created a user")
 
+
+                            })
+                        })
+
+                        data.forEach(function(seed) {
+                            Project.create(seed, function(err, project) {
+                                if (err) {
+                                    console.log("create project error")
+                                } else {
+                                    console.log("project created");
+                                    Issue.create(bug, function(err, feature) {
+                                        if (err) { console.log("error on issue") } else {
+                                            project.issues.push(feature);
+                                            project.save();
+                                            console.log("bug reported");
+                                        };
+                                    })
+                                }
+                            })
                         })
 
                     };

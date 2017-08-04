@@ -1,15 +1,23 @@
 <% include ../partials/header %>
 
 <div class="container">
+	
 	<header class="jumbotron">
+		<% if(currentUser.group === "admin" || currentUser.group === "dev") { %>
 		<div class="container">
 			<h1>Welcome to Bug Report</h1>
 			<p>Submit a new project and report all it's bugs</p>
 			<p>
 				<a href="/projects/new" class="btn btn-primary btn-lg">Add new Project</a>
-			</p>
+			</p>	
 		</div>
 
+		<% }  else {%>
+		<div class="container">
+			<h1>Welcome to <%= currentUser.group %>'s Bug Report</h1>
+			<p>Let the dev team know of any issues in your projects</p>
+		</div>
+		<% } %>
 	</header>
 
 	<div class="row text-center camps-grid ">
