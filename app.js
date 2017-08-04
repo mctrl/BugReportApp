@@ -66,9 +66,9 @@ app.get('/login', function(req, res) {
 })
 
 app.post('/login', passport.authenticate('local', {
-        failureRedirect: '/login',
-        // failureFlash: 'Unsuccessful login'
-    }), function(req, res) {
+    failureRedirect: '/login',
+    // failureFlash: 'Unsuccessful login'
+}), function(req, res) {
     // req.flash('success', 'Welcome back ' + req.user.username);
     res.redirect('/projects')
 })
@@ -82,7 +82,7 @@ app.get('/logout', function(req, res) {
 app.post('/login', function(req, res) {
     res.send('login post');
 })
-app.get('/projects', function(req, res) {
+app.get('/projects',isLoggedIn, function(req, res) {
     Project.find({}, function(err, projects) {
         if (err) {
             console.log("cannot retrieve projects");
@@ -95,7 +95,7 @@ app.get('/projects', function(req, res) {
     })
 })
 
-app.post('/projects', function(req, res) {
+app.post('/projects', isLoggedIn, function(req, res) {
     // res.send('projects new');
     Project.create(req.body.project, function(err, camp) {
         if (err) {
@@ -109,12 +109,12 @@ app.post('/projects', function(req, res) {
     })
 })
 
-app.get('/projects/new', function(req, res) {
+app.get('/projects/new', isLoggedIn, function(req, res) {
     // res.send('projects new');
     res.render('projects/new');
 })
 
-app.get('/projects/:id/issues', function(req, res) {
+app.get('/projects/:id/issues', isLoggedIn, function(req, res) {
     console.log(req.params.id)
     Project.findById(req.params.id).populate("issues").exec(function(err, foundProject) {
         if (err) {
@@ -127,7 +127,7 @@ app.get('/projects/:id/issues', function(req, res) {
     })
 })
 
-app.post('/projects/:id/issues', function(req, res) {
+app.post('/projects/:id/issues', isLoggedIn, function(req, res) {
     console.log(req.params.id)
     var bug = req.body.issue;
     bug.completed = false;
@@ -136,12 +136,13 @@ app.post('/projects/:id/issues', function(req, res) {
             console.log(err)
         } else {
             Issue.create(bug, function(err, feature) {
-                if (err) {console.log(err)
+                if (err) {
+                    console.log(err)
                 } else {
 
                     project.issues.push(feature);
                     project.save();
-                    res.redirect("/projects/"+req.params.id+"/issues")
+                    res.redirect("/projects/" + req.params.id + "/issues")
                 }
             })
         }
@@ -151,7 +152,7 @@ app.post('/projects/:id/issues', function(req, res) {
 })
 
 
-app.get('/projects/:id/issues/new', function(req, res) {
+app.get('/projects/:id/issues/new', isLoggedIn, function(req, res) {
     console.log(req.params.id)
     Project.findById(req.params.id, function(err, project) {
         if (err) {
@@ -162,15 +163,15 @@ app.get('/projects/:id/issues/new', function(req, res) {
     })
 })
 
-app.get('/projects/:id/issues/:issueID', function(req, res) {
+app.get('/projects/:id/issues/:issueID', isLoggedIn, function(req, res) {
     console.log(req.params.id, req.params.issueID)
     res.send('projects issue id');
 })
 
 app.put('/projects/:id/issues/:issueID', function(req, res) {
     console.log("update issue")
-    Issue.findByIdAndUpdate(req.params.issueID, {completed: true} , function(err, foundIssue) {
-        if (err) {res.redirect('back')} else {
+    Issue.findByIdAndUpdate(req.params.issueID, { completed: true }, function(err, foundIssue) {
+        if (err) { res.redirect('back') } else {
             // console.log(foundIssue);
             res.redirect('/projects/' + req.params.id + '/issues');
         }
@@ -179,8 +180,8 @@ app.put('/projects/:id/issues/:issueID', function(req, res) {
 
 app.delete('/projects/:id/issues/:issueID', function(req, res) {
     console.log("delete issue")
-    Issue.findByIdAndRemove(req.params.issueID , function(err, foundIssue) {
-        if (err) {res.redirect('back')} else {
+    Issue.findByIdAndRemove(req.params.issueID, function(err, foundIssue) {
+        if (err) { res.redirect('back') } else {
             // console.log(foundIssue);
             res.redirect('/projects/' + req.params.id + '/issues');
         }
@@ -192,3 +193,11 @@ app.delete('/projects/:id/issues/:issueID', function(req, res) {
 app.listen(process.env.PORT, function() {
     console.log("BugReport has started on port", process.env.PORT)
 })
+
+function isLoggedIn(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    };
+    // req.flash('error', "You need to be logged in to do that")
+    res.redirect('/login');
+}
