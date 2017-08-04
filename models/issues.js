@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 
 //-------------- CREATE SCHEMA ----------------------
 var issueSchema = new mongoose.Schema({
+	created: {type: Date, default: Date.now},
 	summary: String,
 	device: String,
 	os: String,

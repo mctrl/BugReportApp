@@ -8,6 +8,7 @@ var expressSession = require('express-session');
 var passportLocalMongoose = require('passport-local-mongoose');
 var methodOverride = require('method-override');
 var flash = require('connect-flash');
+var moment = require('moment');
 
 var Project = require('./models/projects');
 var Issue = require('./models/issues');
@@ -34,6 +35,8 @@ app.use(expressSession({
 
 app.use(flash());
 app.use(methodOverride("_method"))
+
+app.locals.moment = moment;
 
 //-----------ROUTES--------------
 
