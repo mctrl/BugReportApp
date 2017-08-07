@@ -13,6 +13,7 @@ var moment = require('moment');
 var Project = require('./models/projects');
 var Issue = require('./models/issues');
 var User = require('./models/users');
+var Group = require('./models/groups')
 
 var seedDB = require('./seed');
 
@@ -79,17 +80,33 @@ app.get('/logout', function(req, res) {
     res.redirect('/')
 })
 
-app.get('/projects',isLoggedIn, function(req, res) {
-    Project.find({}, function(err, projects) {
-        if (err) {
-            console.log("cannot retrieve projects");
-            console.log(err);
-        } else {
-            res.render('projects/show', {
-                projects: projects
-            });
-        }
-    })
+app.get('/projects', isLoggedIn, function(req, res) {
+    var userGroup = req.user.group;
+    if (userGroup != "dev" && userGroup != "admin") {
+        Project.find({group: userGroup}, function(err, projects) {
+            if (err) {
+                console.log("cannot retrieve projects");
+                console.log(err);
+            } else {
+                res.render('projects/show', {
+                    projects: projects
+                });
+            }
+        })
+
+    } else {
+        Project.find({}, function(err, projects) {
+            if (err) {
+                console.log("cannot retrieve projects");
+                console.log(err);
+            } else {
+                res.render('projects/show', {
+                    projects: projects
+                });
+            }
+        })
+    }
+
 })
 
 app.post('/projects', isLoggedIn, function(req, res) {
@@ -108,7 +125,12 @@ app.post('/projects', isLoggedIn, function(req, res) {
 
 app.get('/projects/new', isLoggedIn, function(req, res) {
     // res.send('projects new');
-    res.render('projects/new');
+    Group.find({}, function(err, groups) {
+        if (err) { res.redirect('back') } else {
+            res.render('projects/new', { groups: groups });
+        };
+    })
+
 })
 
 app.get('/projects/:id/issues', isLoggedIn, function(req, res) {

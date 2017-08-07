@@ -8,6 +8,7 @@ var projectSchema = new mongoose.Schema({
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "Issue"
 	}],
+	group: String
 })
 
 module.exports = mongoose.model("Project", projectSchema);
