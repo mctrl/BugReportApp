@@ -8,7 +8,14 @@ var issueSchema = new mongoose.Schema({
 	os: String,
 	browser: String,
 	steps: String,
-	completed: Boolean
+	completed: Boolean,
+	author: {
+		id: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: 'User'
+		},
+		username: String
+	}
 })
 
 module.exports = mongoose.model("Issue", issueSchema);
