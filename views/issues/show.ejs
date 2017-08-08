@@ -20,7 +20,7 @@
 				<% foundProject.issues.forEach(function(issue) { %>
 					<div class="row">
 						<div class="col-md-12">
-							<strong>issue.author.username</strong>
+							<strong><%= issue.author.username %></strong>
 							<span class="pull-right"><%= moment(issue.created).fromNow() %></span>
 							
 							<p><%= issue.summary %></p>
@@ -31,12 +31,12 @@
 								<% } %>
 							</p>
 
-							<% if(currentUser.group === "admin" || currentUser.group === "dev") { %> 
+							
 								<!-- <a href="/projects/<%= foundProject._id%>/issues/<%= issue._id%>/show" class="btn btn-xs btn-warning">View</a> -->
-								<button class="btn btn-xs btn-warning" id="viewIssueBtn" data-project="<%= foundProject._id%>" data-issue="<%= issue._id%>">View</button>
+								<button class="btn btn-xs btn-warning viewIssueBtn" data-project="<%= foundProject._id%>" data-issue="<%= issue._id%>">View</button>
 								
 
-
+							<% if(currentUser.group === "admin" || currentUser.group === "dev") { %> 
 								<% if(!issue.completed) {%> <form action="/projects/<%= foundProject._id%>/issues/<%= issue._id%>?_method=PUT" method="post" class="form issue-btn"> <button class="btn btn-xs <% if(issue.completed) {%> 
 								btn-success <% } else { %> btn-danger <% } %> ">Mark Completed</button></form><% } %>
 

@@ -1,4 +1,4 @@
-$('#viewIssueBtn').on('click', function() {
+$('.viewIssueBtn').on('click', function() {
     console.log("view btn clicked");
     var projectId = $(this).data('project');
     var issueId = $(this).data('issue');

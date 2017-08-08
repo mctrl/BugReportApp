@@ -87,22 +87,22 @@ function seedDB() {
                                 })
                             })
 
-                            data.forEach(function(seed) {
-                                Project.create(seed, function(err, project) {
-                                    if (err) {
-                                        console.log("create project error")
-                                    } else {
-                                        console.log("project created");
-                                        Issue.create(bug, function(err, feature) {
-                                            if (err) { console.log("error on issue") } else {
-                                                project.issues.push(feature);
-                                                project.save();
-                                                console.log("bug reported");
-                                            };
-                                        })
-                                    }
-                                })
-                            })
+                            // data.forEach(function(seed) {
+                            //     Project.create(seed, function(err, project) {
+                            //         if (err) {
+                            //             console.log("create project error")
+                            //         } else {
+                            //             console.log("project created");
+                            //             Issue.create(bug, function(err, feature) {
+                            //                 if (err) { console.log("error on issue") } else {
+                            //                     project.issues.push(feature);
+                            //                     project.save();
+                            //                     console.log("bug reported");
+                            //                 };
+                            //             })
+                            //         }
+                            //     })
+                            // })
                         })
                     };
                 });
