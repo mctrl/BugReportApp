@@ -28,7 +28,15 @@
 					<div class="caption">
 						<h4><%= item.title %></h4>
 					</div>
-					<p><a href="/projects/<%= item.id %>/issues" class="btn btn-primary">Show</a></p>
+					<% var bugs = item.issues;
+						var outstanding = 0;
+						bugs.forEach(function(bug){
+							if (bug.completed === false) {
+								outstanding ++;
+							}
+						})
+					%>
+					<p><a  href="/projects/<%= item.id %>/issues" class="btn btn-primary" type="button">Show <span class="badge"><%=outstanding%></span></a>
 				</div>
 			</div>
 		<% }) %>

@@ -83,7 +83,7 @@ app.get('/logout', function(req, res) {
 app.get('/projects', isLoggedIn, function(req, res) {
     var userGroup = req.user.group;
     if (userGroup != "dev" && userGroup != "admin") {
-        Project.find({group: userGroup}, function(err, projects) {
+        Project.find({group: userGroup}).populate("issues").exec(function(err, projects) {
             if (err) {
                 console.log("cannot retrieve projects");
                 console.log(err);
@@ -95,11 +95,12 @@ app.get('/projects', isLoggedIn, function(req, res) {
         })
 
     } else {
-        Project.find({}, function(err, projects) {
+        Project.find().populate("issues").exec(function(err, projects) {
             if (err) {
                 console.log("cannot retrieve projects");
                 console.log(err);
             } else {
+                console.log(projects)
                 res.render('projects/show', {
                     projects: projects
                 });
@@ -134,7 +135,7 @@ app.get('/projects/new', isLoggedIn, function(req, res) {
 })
 
 app.get('/projects/:id/issues', isLoggedIn, function(req, res) {
-    console.log(req.params.id)
+    // console.log(req.params.id)
     Project.findById(req.params.id).populate("issues").exec(function(err, foundProject) {
         if (err) {
             console.log("didnt't find project")
@@ -147,7 +148,7 @@ app.get('/projects/:id/issues', isLoggedIn, function(req, res) {
 })
 
 app.post('/projects/:id/issues', isLoggedIn, function(req, res) {
-    console.log(req.params.id)
+    // console.log(req.params.id)
     var bug = req.body.issue;
     bug.completed = false;
     Project.findById(req.params.id, function(err, project) {
@@ -172,7 +173,7 @@ app.post('/projects/:id/issues', isLoggedIn, function(req, res) {
 
 
 app.get('/projects/:id/issues/new', isLoggedIn, function(req, res) {
-    console.log(req.params.id)
+    // console.log(req.params.id)
     Project.findById(req.params.id, function(err, project) {
         if (err) {
             console.log(err)
@@ -183,7 +184,7 @@ app.get('/projects/:id/issues/new', isLoggedIn, function(req, res) {
 })
 
 app.get('/projects/:id/issues/:issueID', isLoggedIn, function(req, res) {
-    console.log(req.params.id, req.params.issueID)
+    // console.log(req.params.id, req.params.issueID)
     Issue.findById(req.params.issueID, function(err, foundIssue) {
         if (err) return;
             res.send(foundIssue);
