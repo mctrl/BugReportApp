@@ -31,7 +31,8 @@
 								<% } %>
 							</p>
 
-								<a href="/projects/<%= foundProject._id%>/issues/<%= issue._id%>/show" class="btn btn-xs btn-warning">View</a>
+								<!-- <a href="/projects/<%= foundProject._id%>/issues/<%= issue._id%>/show" class="btn btn-xs btn-warning">View</a> -->
+								<button class="btn btn-xs btn-warning" id="viewIssueBtn" data-project="<%= foundProject._id%>" data-issue="<%= issue._id%>">View</button>
 
 								<% if(!issue.completed) {%> <form action="/projects/<%= foundProject._id%>/issues/<%= issue._id%>?_method=PUT" method="post" class="form issue-btn"> <button class="btn btn-xs <% if(issue.completed) {%> 
 								btn-success <% } else { %> btn-danger <% } %> ">Mark Completed</button></form><% } %>
@@ -43,11 +44,32 @@
 			</div>
 		</div>
 
-		<a href="/camps">View all the projects</a>	
+		<a href="/projects">View all the projects</a>	
 
 	</div>
 
-
+	<!-- Modal -->
+	<div class="modal fade" id="showIssue" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title" id="title">Modal title</h4>
+	      </div>
+	      <div class="modal-body">
+	        <p id="summary"></p>
+	        <p id="os"></p>
+	        <p id="device"></p>
+	        <p id="browser"></p>
+	        <p id="steps"></p>
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+	        <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+	      </div>
+	    </div>
+	  </div>
+	</div>
 </div>
 
 

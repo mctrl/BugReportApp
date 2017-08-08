@@ -184,7 +184,10 @@ app.get('/projects/:id/issues/new', isLoggedIn, function(req, res) {
 
 app.get('/projects/:id/issues/:issueID', isLoggedIn, function(req, res) {
     console.log(req.params.id, req.params.issueID)
-    res.send('projects issue id');
+    Issue.findById(req.params.issueID, function(err, foundIssue) {
+        if (err) return;
+            res.send(foundIssue);
+    })
 })
 
 app.put('/projects/:id/issues/:issueID', function(req, res) {
