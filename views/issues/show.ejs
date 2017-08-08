@@ -31,13 +31,17 @@
 								<% } %>
 							</p>
 
+							<% if(currentUser.group === "admin" || currentUser.group === "dev") { %> 
 								<!-- <a href="/projects/<%= foundProject._id%>/issues/<%= issue._id%>/show" class="btn btn-xs btn-warning">View</a> -->
 								<button class="btn btn-xs btn-warning" id="viewIssueBtn" data-project="<%= foundProject._id%>" data-issue="<%= issue._id%>">View</button>
+								
+
 
 								<% if(!issue.completed) {%> <form action="/projects/<%= foundProject._id%>/issues/<%= issue._id%>?_method=PUT" method="post" class="form issue-btn"> <button class="btn btn-xs <% if(issue.completed) {%> 
 								btn-success <% } else { %> btn-danger <% } %> ">Mark Completed</button></form><% } %>
 
 								<form action="/projects/<%= foundProject._id%>/issues/<%= issue._id%>?_method=DELETE" method="post" class="form issue-btn"> <button class="btn btn-xs btn-danger issue-btn">Delete</button></form>
+							<% } %>
 						</div>
 					</div>
 				<% }) %>
