@@ -9,7 +9,25 @@ var passportLocalMongoose = require('passport-local-mongoose');
 var methodOverride = require('method-override');
 var flash = require('connect-flash');
 var moment = require('moment');
-var multer  = require('multer');
+var multer = require('multer');
+//var upload = multer({ dest: './public/img/' });
+
+
+    // var storage = multer.diskStorage({
+    //     filename: function(req, file, cb) {
+    //         cb(null, file.fieldname + '-' + Date.now())
+    //     }
+    // })
+function checkForImg(req, file, cb) {
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+            console.log('Only image files are allowed!')
+            return cb(new Error('Only image files are allowed!'));
+        }
+        console.log('Image format')
+        cb(null, true);
+}
+var upload = multer({ dest: './public/img/', fileFilter: checkForImg }).single('project[image]')
+
 
 var Project = require('./models/projects');
 var Issue = require('./models/issues');
@@ -57,6 +75,7 @@ app.use(function(req, res, next) {
 })
 
 
+
 //-----------ROUTES--------------
 
 app.get('/', function(req, res) {
@@ -84,7 +103,7 @@ app.get('/logout', function(req, res) {
 app.get('/projects', isLoggedIn, function(req, res) {
     var userGroup = req.user.group;
     if (userGroup != "dev" && userGroup != "admin") {
-        Project.find({group: userGroup}).populate("issues").exec(function(err, projects) {
+        Project.find({ group: userGroup }).populate("issues").exec(function(err, projects) {
             if (err) {
                 console.log("cannot retrieve projects");
                 console.log(err);
@@ -101,7 +120,7 @@ app.get('/projects', isLoggedIn, function(req, res) {
                 console.log("cannot retrieve projects");
                 console.log(err);
             } else {
-                console.log(projects)
+                // console.log(projects)
                 res.render('projects/show', {
                     projects: projects
                 });
@@ -113,16 +132,43 @@ app.get('/projects', isLoggedIn, function(req, res) {
 
 app.post('/projects', isLoggedIn, function(req, res) {
     // res.send('projects new');
-    Project.create(req.body.project, function(err, camp) {
-        if (err) {
-            console.log("Something went wrong")
-        } else {
+    // app.use(multer({ dest: './public/img/'}));
+    //var uploadProfileImgs = multer({dest : './files/uploads/profile/'}).single('avatar');
 
-            console.log("we just added a project")
-            // console.log(camp);
-            res.redirect('/projects');
+    upload(req,res, function(err) {
+        console.log(req.fileValidationError);
+        if(req.fileValidationError) {
+            console.log("error")
+              //return res.end(req.fileValidationError);
+        } else {
+            console.log('Everything went fine');
+            // Everything went fine
+            //console.log(req.body);
+            //console.log(req.file); 
         }
+
     })
+
+    // upload(req, res, function(err) {
+    //     if (err) {
+    //         console.log(err.message);
+    //         // An error occurred when uploading
+    //         return
+    //     }
+
+    // })
+
+    //console.log(req);
+    // Project.create(req.body.project, function(err, camp) {
+    //     if (err) {
+    //         console.log("Something went wrong")
+    //     } else {
+
+    //         console.log("we just added a project")
+    //         // console.log(camp);
+    //         res.redirect('/projects');
+    //     }
+    // })
 })
 
 app.get('/projects/new', isLoggedIn, function(req, res) {
@@ -191,7 +237,7 @@ app.get('/projects/:id/issues/:issueID', isLoggedIn, function(req, res) {
     // console.log(req.params.id, req.params.issueID)
     Issue.findById(req.params.issueID, function(err, foundIssue) {
         if (err) return;
-            res.send(foundIssue);
+        res.send(foundIssue);
     })
 })
 
