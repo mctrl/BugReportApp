@@ -10,18 +10,6 @@ var methodOverride = require('method-override');
 var flash = require('connect-flash');
 var moment = require('moment');
 var multer = require('multer');
-//var upload = multer({ dest: './public/img/' });
-
-
-// var storage = multer.diskStorage({
-//     filename: function(req, file, cb) {
-//         cb(null, file.fieldname + '-' + Date.now())
-//     }
-// })
-
-// fileFilter: ( req, file, cb ) => {
-//         cb( null, file.mimetype == 'image/jpeg' )
-// },
 
 function checkForImg(req, file, cb) {
         if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
@@ -29,24 +17,6 @@ function checkForImg(req, file, cb) {
         }
         cb(null, true);
 }
-
-// var storage = multer.diskStorage({
-  //filename: function (req, file, cb) {
-    //console.log(file);
-    // crypto.pseudoRandomBytes(16, function (err, raw) {
-    //   if (err) return cb(err)
-
-    //   cb(null, raw.toString('hex') + path.extname(file.originalname))
-    // })
-  //}
-
-//     filename: function (req, file, cb) {
-//     cb(null, file.fieldname + '-' + Date.now())
-//   }
-// })
-
-// var upload = multer({ dest: './public/img/', storage: storage }).single('project[image]')
-
 
 var Project = require('./models/projects');
 var Issue = require('./models/issues');
@@ -75,8 +45,6 @@ app.use(expressSession({
 app.use(flash());
 app.use(methodOverride("_method"))
 
-//app.locals.moment = moment;
-
 //-------------PASSPORT SETUP---------------
 app.use(passport.initialize());
 app.use(passport.session());
@@ -99,7 +67,6 @@ app.use(function(req, res, next) {
 //-----------ROUTES--------------
 
 app.get('/', function(req, res) {
-    //res.redirect('/projects')
     res.render('landing');
 })
 
@@ -128,8 +95,6 @@ app.get('/projects', isLoggedIn, function(req, res) {
             if (err) {
                 req.flash('error', "Cannot retrieve projects")
                 res.redirect('back');
-                //console.log("cannot retrieve projects");
-                //console.log(err);
             } else {
                 res.render('projects/show', {
                     projects: projects
@@ -142,10 +107,7 @@ app.get('/projects', isLoggedIn, function(req, res) {
             if (err) {
                 req.flash('error', "Cannot retrieve projects")
                 res.redirect('back');
-                //console.log("cannot retrieve projects");
-                //console.log(err);
             } else {
-                // console.log(projects)
                 res.render('projects/show', {
                     projects: projects
                 });
@@ -156,8 +118,6 @@ app.get('/projects', isLoggedIn, function(req, res) {
 })
 
 app.post('/projects', isLoggedIn, function(req, res) {
-    // res.send('projects new');
-    // app.use(multer({ dest: './public/img/'}));
     var upload = multer({ dest: './public/img/', fileFilter: checkForImg }).single('project[image]')
 
     upload(req,res, function(err) {
@@ -165,10 +125,6 @@ app.post('/projects', isLoggedIn, function(req, res) {
             req.flash('error', 'Only image files are allowed!')
             res.redirect('/projects/new');
         } else {
-            //console.log('Everything went fine');
-            // Everything went fine
-            //console.log(req.body);
-            // console.log(req.file); 
             var project =  req.body.project;
             project.image = req.file.filename;
             Project.create(project, function(err, project) {
