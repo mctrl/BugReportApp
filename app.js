@@ -13,15 +13,15 @@ var multer = require('multer');
 //var upload = multer({ dest: './public/img/' });
 
 
-    // var storage = multer.diskStorage({
-    //     filename: function(req, file, cb) {
-    //         cb(null, file.fieldname + '-' + Date.now())
-    //     }
-    // })
+// var storage = multer.diskStorage({
+//     filename: function(req, file, cb) {
+//         cb(null, file.fieldname + '-' + Date.now())
+//     }
+// })
 
-    // fileFilter: ( req, file, cb ) => {
-    //         cb( null, file.mimetype == 'image/jpeg' )
-    // },
+// fileFilter: ( req, file, cb ) => {
+//         cb( null, file.mimetype == 'image/jpeg' )
+// },
 
 function checkForImg(req, file, cb) {
         if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
@@ -29,7 +29,24 @@ function checkForImg(req, file, cb) {
         }
         cb(null, true);
 }
+
+// var storage = multer.diskStorage({
+  //filename: function (req, file, cb) {
+    //console.log(file);
+    // crypto.pseudoRandomBytes(16, function (err, raw) {
+    //   if (err) return cb(err)
+
+    //   cb(null, raw.toString('hex') + path.extname(file.originalname))
+    // })
+  //}
+
+//     filename: function (req, file, cb) {
+//     cb(null, file.fieldname + '-' + Date.now())
+//   }
+// })
+
 var upload = multer({ dest: './public/img/', fileFilter: checkForImg }).single('project[image]')
+// var upload = multer({ dest: './public/img/', storage: storage }).single('project[image]')
 
 
 var Project = require('./models/projects');
@@ -136,7 +153,6 @@ app.get('/projects', isLoggedIn, function(req, res) {
 app.post('/projects', isLoggedIn, function(req, res) {
     // res.send('projects new');
     // app.use(multer({ dest: './public/img/'}));
-    //var uploadProfileImgs = multer({dest : './files/uploads/profile/'}).single('avatar');
 
     upload(req,res, function(err) {
         if(err) {
@@ -146,21 +162,24 @@ app.post('/projects', isLoggedIn, function(req, res) {
             // Everything went fine
             //console.log(req.body);
             //console.log(req.file); 
+            var project =  req.body.project;
+            project.image = req.file.filename;
+            Project.create(project, function(err, project) {
+                if (err) {
+                    console.log("Something went wrong")
+                } else {
+
+                    console.log("we just added a project")
+                    // console.log(camp);
+                    res.redirect('/projects');
+                }
+            })
         }
     })
 
 
     //console.log(req);
-    // Project.create(req.body.project, function(err, camp) {
-    //     if (err) {
-    //         console.log("Something went wrong")
-    //     } else {
 
-    //         console.log("we just added a project")
-    //         // console.log(camp);
-    //         res.redirect('/projects');
-    //     }
-    // })
 })
 
 app.get('/projects/new', isLoggedIn, function(req, res) {
