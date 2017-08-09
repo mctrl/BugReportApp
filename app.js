@@ -9,6 +9,7 @@ var passportLocalMongoose = require('passport-local-mongoose');
 var methodOverride = require('method-override');
 var flash = require('connect-flash');
 var moment = require('moment');
+var multer  = require('multer');
 
 var Project = require('./models/projects');
 var Issue = require('./models/issues');
