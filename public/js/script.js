@@ -11,5 +11,11 @@ $('.viewIssueBtn').on('click', function() {
     	$modal.find('#device').text(data.device);
     	$modal.find('#browser').text(data.browser);
     	$modal.find('#steps').text(data.steps);
+        var screens = data.screenshots;
+        for (var i = 0; i < screens.length; i++) {
+            console.log(screens[i])
+            var image = "<img class='img-responsive' src=/screenshots/"+screens[i]+" />";
+            $modal.find('#screenshots-container').append(image);
+        };
     });
 })

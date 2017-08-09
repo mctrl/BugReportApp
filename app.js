@@ -205,33 +205,6 @@ app.get('/projects/:id/issues', isLoggedIn, function(req, res) {
     })
 })
 
-// app.post('/projects/:id/issues', isLoggedIn, function(req, res) {
-//     // console.log(req.params.id)
-//     var bug = req.body.issue;
-//     bug.completed = false;
-//     bug.author = {
-//         id: req.user._id,
-//         username: req.user.username
-//     }
-//     Project.findById(req.params.id, function(err, project) {
-//         if (err) {
-//             console.log(err)
-//         } else {
-//             Issue.create(bug, function(err, feature) {
-//                 if (err) {
-//                     console.log(err)
-//                 } else {
-//                     project.issues.push(feature);
-//                     project.save();
-//                     res.redirect("/projects/" + req.params.id + "/issues")
-//                 }
-//             })
-//         }
-//         // body...
-//     })
-
-// })
-
 app.post('/projects/:id/issues', isLoggedIn, function(req, res) {
     var upload = multer({ dest: './public/screenshots/', fileFilter: checkForImg }).array('issue[screenshots]')
     // console.log(req.params.id)
