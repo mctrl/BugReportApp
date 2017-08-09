@@ -18,12 +18,15 @@ var multer = require('multer');
     //         cb(null, file.fieldname + '-' + Date.now())
     //     }
     // })
+
+    // fileFilter: ( req, file, cb ) => {
+    //         cb( null, file.mimetype == 'image/jpeg' )
+    // },
+
 function checkForImg(req, file, cb) {
         if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-            console.log('Only image files are allowed!')
             return cb(new Error('Only image files are allowed!'));
         }
-        console.log('Image format')
         cb(null, true);
 }
 var upload = multer({ dest: './public/img/', fileFilter: checkForImg }).single('project[image]')
@@ -136,27 +139,16 @@ app.post('/projects', isLoggedIn, function(req, res) {
     //var uploadProfileImgs = multer({dest : './files/uploads/profile/'}).single('avatar');
 
     upload(req,res, function(err) {
-        console.log(req.fileValidationError);
-        if(req.fileValidationError) {
+        if(err) {
             console.log("error")
-              //return res.end(req.fileValidationError);
         } else {
             console.log('Everything went fine');
             // Everything went fine
             //console.log(req.body);
             //console.log(req.file); 
         }
-
     })
 
-    // upload(req, res, function(err) {
-    //     if (err) {
-    //         console.log(err.message);
-    //         // An error occurred when uploading
-    //         return
-    //     }
-
-    // })
 
     //console.log(req);
     // Project.create(req.body.project, function(err, camp) {
