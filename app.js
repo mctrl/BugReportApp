@@ -45,7 +45,6 @@ function checkForImg(req, file, cb) {
 //   }
 // })
 
-var upload = multer({ dest: './public/img/', fileFilter: checkForImg }).single('project[image]')
 // var upload = multer({ dest: './public/img/', storage: storage }).single('project[image]')
 
 
@@ -153,6 +152,7 @@ app.get('/projects', isLoggedIn, function(req, res) {
 app.post('/projects', isLoggedIn, function(req, res) {
     // res.send('projects new');
     // app.use(multer({ dest: './public/img/'}));
+    var upload = multer({ dest: './public/img/', fileFilter: checkForImg }).single('project[image]')
 
     upload(req,res, function(err) {
         if(err) {
@@ -161,7 +161,7 @@ app.post('/projects', isLoggedIn, function(req, res) {
             console.log('Everything went fine');
             // Everything went fine
             //console.log(req.body);
-            //console.log(req.file); 
+            // console.log(req.file); 
             var project =  req.body.project;
             project.image = req.file.filename;
             Project.create(project, function(err, project) {
@@ -205,33 +205,74 @@ app.get('/projects/:id/issues', isLoggedIn, function(req, res) {
     })
 })
 
+// app.post('/projects/:id/issues', isLoggedIn, function(req, res) {
+//     // console.log(req.params.id)
+//     var bug = req.body.issue;
+//     bug.completed = false;
+//     bug.author = {
+//         id: req.user._id,
+//         username: req.user.username
+//     }
+//     Project.findById(req.params.id, function(err, project) {
+//         if (err) {
+//             console.log(err)
+//         } else {
+//             Issue.create(bug, function(err, feature) {
+//                 if (err) {
+//                     console.log(err)
+//                 } else {
+//                     project.issues.push(feature);
+//                     project.save();
+//                     res.redirect("/projects/" + req.params.id + "/issues")
+//                 }
+//             })
+//         }
+//         // body...
+//     })
+
+// })
+
 app.post('/projects/:id/issues', isLoggedIn, function(req, res) {
+    var upload = multer({ dest: './public/screenshots/', fileFilter: checkForImg }).array('issue[screenshots]')
     // console.log(req.params.id)
-    var bug = req.body.issue;
-    bug.completed = false;
-    bug.author = {
-        id: req.user._id,
-        username: req.user.username
-    }
-    Project.findById(req.params.id, function(err, project) {
-        if (err) {
-            console.log(err)
+    upload(req,res, function(err) {
+        if(err) {
+            console.log("error")
         } else {
-            Issue.create(bug, function(err, feature) {
+            console.log('Everything went fine');
+            // Everything went fine
+            //console.log(req.body);
+            //console.log(req.files); 
+            var screens = req.files;
+            var bug = req.body.issue;
+            bug.completed = false;
+            bug.screenshots = [];
+            bug.author = {
+                id: req.user._id,
+                username: req.user.username
+            }
+            for (var i = 0; i < screens.length; i++) {
+                bug.screenshots.push(screens[i].filename);
+            };
+            Project.findById(req.params.id, function(err, project) {
                 if (err) {
                     console.log(err)
                 } else {
-                    project.issues.push(feature);
-                    project.save();
-                    res.redirect("/projects/" + req.params.id + "/issues")
+                    Issue.create(bug, function(err, feature) {
+                        if (err) {
+                            console.log(err)
+                        } else {
+                            project.issues.push(feature);
+                            project.save();
+                            res.redirect("/projects/" + req.params.id + "/issues")
+                        }
+                    })
                 }
             })
         }
-        // body...
     })
 
 })
-
 
 app.get('/projects/:id/issues/new', isLoggedIn, function(req, res) {
     // console.log(req.params.id)

@@ -9,6 +9,7 @@ var issueSchema = new mongoose.Schema({
 	browser: String,
 	steps: String,
 	completed: Boolean,
+	screenshots: Array,
 	author: {
 		id: {
 			type: mongoose.Schema.Types.ObjectId,

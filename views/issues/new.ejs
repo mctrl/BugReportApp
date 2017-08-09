@@ -6,7 +6,7 @@
                 <div class="row">
                     <div class="col-md-4"></div>
                     <div class="col-md-4">
-                        <form action="/projects/<%= project._id %>/issues" method="post" class="form">
+                        <form action="/projects/<%= project._id %>/issues" method="post" class="form" enctype="multipart/form-data">
                             <div class="form-group">
                                 <label>Add a summary</label>
                                 <input type="text" name="issue[summary]" class="form-control">
@@ -48,6 +48,10 @@
                             <div class="form-group">
                                 <label>Add the steps to reproduce it</label>
                                 <textarea class="form-control" name="issue[steps]" cols="30" rows="10"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Screenshots</label>
+                                <input type="file" class="form-control" name="issue[screenshots]" placeholder="Image" multiple>
                             </div>
                             <div class="form-group">
                                 <button type="submit" class="btn btn-lg btn-default btn-block">Add</button>
