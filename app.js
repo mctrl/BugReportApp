@@ -75,7 +75,7 @@ app.use(expressSession({
 app.use(flash());
 app.use(methodOverride("_method"))
 
-app.locals.moment = moment;
+//app.locals.moment = moment;
 
 //-------------PASSPORT SETUP---------------
 app.use(passport.initialize());
@@ -88,8 +88,9 @@ passport.deserializeUser(User.deserializeUser());
 
 app.use(function(req, res, next) {
     res.locals.currentUser = req.user;
-    // res.locals.error = req.flash('error');
-    // res.locals.success = req.flash('success');
+    res.locals.error = req.flash('error');
+    res.locals.success = req.flash('success');
+    res.locals.moment = moment;
     next();
 })
 
@@ -98,6 +99,7 @@ app.use(function(req, res, next) {
 //-----------ROUTES--------------
 
 app.get('/', function(req, res) {
+    //res.redirect('/projects')
     res.render('landing');
 })
 
@@ -107,15 +109,15 @@ app.get('/login', function(req, res) {
 
 app.post('/login', passport.authenticate('local', {
     failureRedirect: '/login',
-    // failureFlash: 'Unsuccessful login'
+    failureFlash: 'Unsuccessful login'
 }), function(req, res) {
-    // req.flash('success', 'Welcome back ' + req.user.username);
+    req.flash('success', 'Welcome back ' + req.user.username);
     res.redirect('/projects')
 })
 
 app.get('/logout', function(req, res) {
     req.logout();
-    // req.flash('success', "You logged out")
+    req.flash('success', "You logged out")
     res.redirect('/')
 })
 
@@ -124,8 +126,10 @@ app.get('/projects', isLoggedIn, function(req, res) {
     if (userGroup != "dev" && userGroup != "admin") {
         Project.find({ group: userGroup }).populate("issues").exec(function(err, projects) {
             if (err) {
-                console.log("cannot retrieve projects");
-                console.log(err);
+                req.flash('error', "Cannot retrieve projects")
+                res.redirect('back');
+                //console.log("cannot retrieve projects");
+                //console.log(err);
             } else {
                 res.render('projects/show', {
                     projects: projects
@@ -136,8 +140,10 @@ app.get('/projects', isLoggedIn, function(req, res) {
     } else {
         Project.find().populate("issues").exec(function(err, projects) {
             if (err) {
-                console.log("cannot retrieve projects");
-                console.log(err);
+                req.flash('error', "Cannot retrieve projects")
+                res.redirect('back');
+                //console.log("cannot retrieve projects");
+                //console.log(err);
             } else {
                 // console.log(projects)
                 res.render('projects/show', {
@@ -156,9 +162,10 @@ app.post('/projects', isLoggedIn, function(req, res) {
 
     upload(req,res, function(err) {
         if(err) {
-            console.log("error")
+            req.flash('error', 'Only image files are allowed!')
+            res.redirect('/projects/new');
         } else {
-            console.log('Everything went fine');
+            //console.log('Everything went fine');
             // Everything went fine
             //console.log(req.body);
             // console.log(req.file); 
@@ -166,24 +173,18 @@ app.post('/projects', isLoggedIn, function(req, res) {
             project.image = req.file.filename;
             Project.create(project, function(err, project) {
                 if (err) {
-                    console.log("Something went wrong")
+                    req.flash('error', "Cannot save new project")
+                    res.redirect('/projects/new');
                 } else {
-
-                    console.log("we just added a project")
-                    // console.log(camp);
+                    req.flash('success', "Project saved!")
                     res.redirect('/projects');
                 }
             })
         }
     })
-
-
-    //console.log(req);
-
 })
 
 app.get('/projects/new', isLoggedIn, function(req, res) {
-    // res.send('projects new');
     Group.find({}, function(err, groups) {
         if (err) { res.redirect('back') } else {
             res.render('projects/new', { groups: groups });
@@ -193,10 +194,10 @@ app.get('/projects/new', isLoggedIn, function(req, res) {
 })
 
 app.get('/projects/:id/issues', isLoggedIn, function(req, res) {
-    // console.log(req.params.id)
     Project.findById(req.params.id).populate("issues").exec(function(err, foundProject) {
         if (err) {
-            console.log("didnt't find project")
+            req.flash('error', "Could't find issues on project")
+            res.redirect('/projects');
         } else {
             res.render('issues/show', { foundProject: foundProject });
         }
@@ -206,16 +207,13 @@ app.get('/projects/:id/issues', isLoggedIn, function(req, res) {
 })
 
 app.post('/projects/:id/issues', isLoggedIn, function(req, res) {
+
     var upload = multer({ dest: './public/screenshots/', fileFilter: checkForImg }).array('issue[screenshots]')
-    // console.log(req.params.id)
     upload(req,res, function(err) {
         if(err) {
-            console.log("error")
+            req.flash('error', 'Only image files are allowed!')
+            res.redirect('/projects/'+req.params.id+'/issues/new');
         } else {
-            console.log('Everything went fine');
-            // Everything went fine
-            //console.log(req.body);
-            //console.log(req.files); 
             var screens = req.files;
             var bug = req.body.issue;
             bug.completed = false;
@@ -229,14 +227,17 @@ app.post('/projects/:id/issues', isLoggedIn, function(req, res) {
             };
             Project.findById(req.params.id, function(err, project) {
                 if (err) {
-                    console.log(err)
+                req.flash('error', 'Could not save the issue')
+                res.redirect('/projects/'+req.params.id+'/issues/new');
                 } else {
                     Issue.create(bug, function(err, feature) {
                         if (err) {
-                            console.log(err)
+                            req.flash('error', 'Could not save the issue')
+                            res.redirect('/projects/'+req.params.id+'/issues/new');
                         } else {
                             project.issues.push(feature);
                             project.save();
+                            req.flash('success', 'Issue submitted!')
                             res.redirect("/projects/" + req.params.id + "/issues")
                         }
                     })
@@ -248,10 +249,9 @@ app.post('/projects/:id/issues', isLoggedIn, function(req, res) {
 })
 
 app.get('/projects/:id/issues/new', isLoggedIn, function(req, res) {
-    // console.log(req.params.id)
     Project.findById(req.params.id, function(err, project) {
         if (err) {
-            console.log(err)
+            res.redirect('back');
         } else {
             res.render("issues/new", { project: project })
         }
@@ -259,7 +259,6 @@ app.get('/projects/:id/issues/new', isLoggedIn, function(req, res) {
 })
 
 app.get('/projects/:id/issues/:issueID', isLoggedIn, function(req, res) {
-    // console.log(req.params.id, req.params.issueID)
     Issue.findById(req.params.issueID, function(err, foundIssue) {
         if (err) return;
         res.send(foundIssue);
@@ -269,18 +268,22 @@ app.get('/projects/:id/issues/:issueID', isLoggedIn, function(req, res) {
 app.put('/projects/:id/issues/:issueID', function(req, res) {
     console.log("update issue")
     Issue.findByIdAndUpdate(req.params.issueID, { completed: true }, function(err, foundIssue) {
-        if (err) { res.redirect('back') } else {
-            // console.log(foundIssue);
+        if (err) {
+            req.flash('error', 'Cannot mark as completed!');
+            res.redirect('back');
+        } else {
             res.redirect('/projects/' + req.params.id + '/issues');
         }
     })
 });
 
 app.delete('/projects/:id/issues/:issueID', function(req, res) {
-    console.log("delete issue")
     Issue.findByIdAndRemove(req.params.issueID, function(err, foundIssue) {
-        if (err) { res.redirect('back') } else {
-            // console.log(foundIssue);
+        if (err) { 
+            req.flash('error', 'Cannot delete issue!');
+            res.redirect('back') 
+        } else {
+            req.flash('success', 'Issue deleted!');
             res.redirect('/projects/' + req.params.id + '/issues');
         }
     })
@@ -296,6 +299,6 @@ function isLoggedIn(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
     };
-    // req.flash('error', "You need to be logged in to do that")
+    req.flash('error', "You need to be logged in to do that")
     res.redirect('/login');
 }
