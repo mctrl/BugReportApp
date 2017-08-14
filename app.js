@@ -10,6 +10,8 @@ var methodOverride = require('method-override');
 var flash = require('connect-flash');
 var moment = require('moment');
 var multer = require('multer');
+var MY_SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL;
+var slack = require('slack-notify')(MY_SLACK_WEBHOOK_URL);
 
 function checkForImg(req, file, cb) {
         if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
@@ -194,6 +196,11 @@ app.post('/projects/:id/issues', isLoggedIn, function(req, res) {
                             project.issues.push(feature);
                             project.save();
                             req.flash('success', 'Issue submitted!')
+                            slack.send({
+                              text: '*' + req.user.username + '* just posted a new bug on _' + project.title + '_',
+                              username: "Bug Report",
+                              icon_emoji: ':bug:',
+                            });
                             res.redirect("/projects/" + req.params.id + "/issues")
                         }
                     })
