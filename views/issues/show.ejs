@@ -17,23 +17,22 @@
 					<a href="/projects/<%= foundProject._id%>/issues/new" class="btn btn-success">Add issue</a>
 				</div>
 				<hr>
-				<% foundProject.issues.forEach(function(issue) { %>
-					<div class="row">
-						<div class="col-md-12">
-							<strong><%= issue.author.username %></strong>
-							<span class="pull-right"><%= moment(issue.created).fromNow() %></span>
-							
-							<p><%= issue.summary %></p>
-							<p>
-								<% if(issue.completed) {%> 
-								completed <% } else { %> 
-								not completed 
-								<% } %>
-							</p>
 
-							
-								<!-- <a href="/projects/<%= foundProject._id%>/issues/<%= issue._id%>/show" class="btn btn-xs btn-warning">View</a> -->
-								<button class="btn btn-xs btn-warning viewIssueBtn" data-project="<%= foundProject._id%>" data-issue="<%= issue._id%>">View</button>
+				<% foundProject.issues.forEach(function(issue) { %>
+				<div class="panel panel-info"> 
+					<div class="panel-heading"> 
+						<h3 class="panel-title"><%= issue.author.username %>
+						<span class="pull-right"><em><%= moment(issue.created).fromNow() %></em></span>
+
+						</h3> 
+						
+					</div> 
+					<div class="panel-body"> 
+
+							<p><%= issue.summary %></p>
+					</div> 
+					<div class="panel-footer">
+							<button class="btn btn-xs btn-warning viewIssueBtn" data-project="<%= foundProject._id%>" data-issue="<%= issue._id%>">View</button>
 								
 
 							<% if(currentUser.group === "admin" || currentUser.group === "dev") { %> 
@@ -42,6 +41,13 @@
 
 								<form action="/projects/<%= foundProject._id%>/issues/<%= issue._id%>?_method=DELETE" method="post" class="form issue-btn"> <button class="btn btn-xs btn-danger issue-btn">Delete</button></form>
 							<% } %>
+
+							<% if(issue.completed) {%> 
+								<span class="btn btn-xs btn-success pull-right glyphicon glyphicon-ok" aria-hidden="true"></span>
+								<% } else { %> 
+								<span class="btn btn-xs btn-danger pull-right glyphicon glyphicon-remove" aria-hidden="true"></span>
+							<% } %>
+							
 						</div>
 					</div>
 				<% }) %>
